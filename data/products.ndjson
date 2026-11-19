@@ -1,0 +1,16 @@
+{"index":{"_index":"products","_id":"1"}}
+{"name":"机械键盘 Pro","brand":"KeyChron","category":"外设","price":799,"tags":["机械","RGB","无线"],"in_stock":true,"sold":1280,"created_at":"2024-03-01T10:00:00Z","description":"87 键配列，热插拔轴体，支持三模连接"}
+{"index":{"_index":"products","_id":"2"}}
+{"name":"静音办公鼠标","brand":"Logitech","category":"外设","price":199,"tags":["静音","办公","有线"],"in_stock":true,"sold":3560,"created_at":"2024-01-15T08:30:00Z","description":"轻音按键，人体工学设计，适合长时间办公"}
+{"index":{"_index":"products","_id":"3"}}
+{"name":"4K 显示器 27 寸","brand":"Dell","category":"显示器","price":2499,"tags":["4K","IPS","办公"],"in_stock":true,"sold":890,"created_at":"2024-05-20T12:00:00Z","description":"27 英寸 IPS 面板，色准出色，适合设计和办公"}
+{"index":{"_index":"products","_id":"4"}}
+{"name":"降噪耳机 Studio","brand":"Sony","category":"音频","price":1999,"tags":["降噪","蓝牙","头戴"],"in_stock":false,"sold":2100,"created_at":"2023-11-11T00:00:00Z","description":"主动降噪，长续航，适合通勤与出差"}
+{"index":{"_index":"products","_id":"5"}}
+{"name":"便携固态硬盘 1TB","brand":"Samsung","category":"存储","price":699,"tags":["SSD","便携","USB-C"],"in_stock":true,"sold":1720,"created_at":"2024-02-08T09:15:00Z","description":"读写速度快，金属外壳，支持 USB-C"}
+{"index":{"_index":"products","_id":"6"}}
+{"name":"人体工学椅","brand":"Herman Miller","category":"家具","price":8999,"tags":["人体工学","办公","可调节"],"in_stock":true,"sold":320,"created_at":"2024-04-01T14:20:00Z","description":"可调节腰托与扶手，适合长时间坐姿办公"}
+{"index":{"_index":"products","_id":"7"}}
+{"name":"无线机械键盘 Mini","brand":"KeyChron","category":"外设","price":459,"tags":["机械","无线","紧凑"],"in_stock":true,"sold":980,"created_at":"2024-06-12T11:00:00Z","description":"61 键迷你配列，双模连接，适合出差携带"}
+{"index":{"_index":"products","_id":"8"}}
+{"name":"高清摄像头 1080P","brand":"Logitech","category":"外设","price":349,"tags":["摄像头","会议","1080P"],"in_stock":true,"sold":1450,"created_at":"2024-03-28T16:45:00Z","description":"自动对焦，内置麦克风，适合远程会议"}

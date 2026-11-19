@@ -1,0 +1,85 @@
+# Kibana Dev Tools — 04-analyzer-ik
+# 需要镜像已安装 analysis-ik（本仓库 Dockerfile 已包含）
+
+############################################################
+# 1. 确认插件
+############################################################
+GET /_cat/plugins?v
+
+############################################################
+# 2. 对比分词：standard vs ik_smart vs ik_max_word
+############################################################
+POST /_analyze
+{
+  "analyzer": "standard",
+  "text": "机械键盘适合编程办公"
+}
+
+POST /_analyze
+{
+  "analyzer": "ik_smart",
+  "text": "机械键盘适合编程办公"
+}
+
+POST /_analyze
+{
+  "analyzer": "ik_max_word",
+  "text": "机械键盘适合编程办公"
+}
+
+############################################################
+# 3. 建索引：写入用 ik_max_word，搜索用 ik_smart
+############################################################
+DELETE /articles
+
+PUT /articles
+{
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  },
+  "mappings": {
+    "properties": {
+      "title": {
+        "type": "text",
+        "analyzer": "ik_max_word",
+        "search_analyzer": "ik_smart"
+      },
+      "content": {
+        "type": "text",
+        "analyzer": "ik_max_word",
+        "search_analyzer": "ik_smart"
+      },
+      "category": { "type": "keyword" },
+      "tags": { "type": "keyword" }
+    }
+  }
+}
+
+# 然后用 Python 导入 data/articles.ndjson，或手动 bulk：
+# POST /_bulk   + ndjson 内容
+
+############################################################
+# 4. 中文检索
+############################################################
+GET /articles/_search
+{
+  "query": {
+    "match": { "content": "机械键盘" }
+  },
+  "highlight": {
+    "fields": {
+      "content": {}
+    }
+  }
+}
+
+GET /articles/_search
+{
+  "query": {
+    "multi_match": {
+      "query": "办公显示器",
+      "fields": ["title^2", "content"]
+    }
+  }
+}

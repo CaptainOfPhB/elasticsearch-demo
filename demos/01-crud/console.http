@@ -1,0 +1,138 @@
+# Kibana Dev Tools Console
+# 打开 http://localhost:5601 → 左侧 Management / Dev Tools → Console
+# 把下方语句分段粘贴执行（每次一块即可）
+
+############################################################
+# 1. 集群探活
+############################################################
+GET /
+
+GET /_cluster/health?pretty
+
+############################################################
+# 2. 创建索引（显式 mapping）
+############################################################
+PUT /products
+{
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  },
+  "mappings": {
+    "properties": {
+      "name": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          }
+        }
+      },
+      "brand": {
+        "type": "keyword"
+      },
+      "category": {
+        "type": "keyword"
+      },
+      "price": {
+        "type": "float"
+      },
+      "tags": {
+        "type": "keyword"
+      },
+      "in_stock": {
+        "type": "boolean"
+      },
+      "sold": {
+        "type": "integer"
+      },
+      "created_at": {
+        "type": "date"
+      },
+      "description": {
+        "type": "text"
+      }
+    }
+  }
+}
+
+############################################################
+# 3. 写入单条文档
+############################################################
+POST /products/_doc/1
+{
+  "name": "机械键盘 Pro",
+  "brand": "KeyChron",
+  "category": "外设",
+  "price": 799,
+  "tags": ["机械", "RGB", "无线"],
+  "in_stock": true,
+  "sold": 1280,
+  "created_at": "2024-03-01T10:00:00Z",
+  "description": "87 键配列，热插拔轴体，支持三模连接"
+}
+
+############################################################
+# 4. 按 ID 读取
+############################################################
+GET /products/_doc/1
+
+############################################################
+# 5. 部分更新（update）
+############################################################
+POST /products/_update/1
+{
+  "doc": {
+    "price": 749,
+    "sold": 1300
+  }
+}
+
+GET /products/_doc/1
+
+############################################################
+# 6. 全量覆盖（index / PUT）
+############################################################
+PUT /products/_doc/1
+{
+  "name": "机械键盘 Pro",
+  "brand": "KeyChron",
+  "category": "外设",
+  "price": 799,
+  "tags": ["机械", "RGB", "无线"],
+  "in_stock": true,
+  "sold": 1280,
+  "created_at": "2024-03-01T10:00:00Z",
+  "description": "87 键配列，热插拔轴体，支持三模连接"
+}
+
+############################################################
+# 7. Bulk 批量写入（ndjson 风格，Console 里用 NDJSON body）
+############################################################
+POST /_bulk
+{"index":{"_index":"products","_id":"2"}}
+{"name":"静音办公鼠标","brand":"Logitech","category":"外设","price":199,"tags":["静音","办公","有线"],"in_stock":true,"sold":3560,"created_at":"2024-01-15T08:30:00Z","description":"轻音按键，人体工学设计，适合长时间办公"}
+{"index":{"_index":"products","_id":"3"}}
+{"name":"4K 显示器 27 寸","brand":"Dell","category":"显示器","price":2499,"tags":["4K","IPS","办公"],"in_stock":true,"sold":890,"created_at":"2024-05-20T12:00:00Z","description":"27 英寸 IPS 面板，色准出色，适合设计和办公"}
+{"index":{"_index":"products","_id":"4"}}
+{"name":"降噪耳机 Studio","brand":"Sony","category":"音频","price":1999,"tags":["降噪","蓝牙","头戴"],"in_stock":false,"sold":2100,"created_at":"2023-11-11T00:00:00Z","description":"主动降噪，长续航，适合通勤与出差"}
+{"index":{"_index":"products","_id":"5"}}
+{"name":"便携固态硬盘 1TB","brand":"Samsung","category":"存储","price":699,"tags":["SSD","便携","USB-C"],"in_stock":true,"sold":1720,"created_at":"2024-02-08T09:15:00Z","description":"读写速度快，金属外壳，支持 USB-C"}
+
+############################################################
+# 8. 刷新后搜索全部
+############################################################
+POST /products/_refresh
+
+GET /products/_search
+{
+  "query": { "match_all": {} }
+}
+
+############################################################
+# 9. 删除文档 / 删除索引
+############################################################
+DELETE /products/_doc/4
+
+# 谨慎：会删掉整个索引
+# DELETE /products

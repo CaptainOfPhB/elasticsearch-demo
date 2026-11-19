@@ -1,0 +1,79 @@
+# Kibana Dev Tools — 02-mapping（保持简单）
+
+############################################################
+# 1. 看现有 products mapping（先跑过 01-crud）
+############################################################
+GET /products/_mapping
+
+############################################################
+# 2. text vs keyword：同一字段多类型
+############################################################
+DELETE /mapping_demo
+
+PUT /mapping_demo
+{
+  "mappings": {
+    "properties": {
+      "title": {
+        "type": "text",
+        "fields": {
+          "keyword": { "type": "keyword" }
+        }
+      },
+      "brand": { "type": "keyword" },
+      "price": { "type": "float" }
+    }
+  }
+}
+
+POST /mapping_demo/_doc/1
+{
+  "title": "机械键盘 Pro",
+  "brand": "KeyChron",
+  "price": 799
+}
+
+############################################################
+# 3. text 可全文检索；keyword 适合精确过滤 / 聚合
+############################################################
+GET /mapping_demo/_search
+{
+  "query": {
+    "match": { "title": "键盘" }
+  }
+}
+
+GET /mapping_demo/_search
+{
+  "query": {
+    "term": { "brand": "KeyChron" }
+  }
+}
+
+GET /mapping_demo/_search
+{
+  "size": 0,
+  "aggs": {
+    "by_brand": {
+      "terms": { "field": "brand" }
+    }
+  }
+}
+
+############################################################
+# 4. 错误示范：对 text 主字段做 term（通常匹配不到完整短语）
+############################################################
+GET /mapping_demo/_search
+{
+  "query": {
+    "term": { "title": "机械键盘 Pro" }
+  }
+}
+
+# 正确：用 multi-field 的 keyword
+GET /mapping_demo/_search
+{
+  "query": {
+    "term": { "title.keyword": "机械键盘 Pro" }
+  }
+}

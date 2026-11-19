@@ -1,0 +1,109 @@
+# Kibana Dev Tools — 05-bm25
+# ES 默认相关度就是 BM25。本课对比两组 k1/b 参数。
+
+############################################################
+# 背景（简记）
+# - k1：词频饱和，越大 → 重复出现同一词加分越多（常见 1.2）
+# - b ：长度归一，越大 → 长文档越吃亏（常见 0.75；0=不按长度惩罚）
+############################################################
+
+DELETE /bm25_default
+DELETE /bm25_tuned
+
+PUT /bm25_default
+{
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0,
+    "similarity": {
+      "custom_bm25": {
+        "type": "BM25",
+        "k1": 1.2,
+        "b": 0.75
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "title": {
+        "type": "text",
+        "analyzer": "ik_max_word",
+        "search_analyzer": "ik_smart",
+        "similarity": "custom_bm25"
+      },
+      "content": {
+        "type": "text",
+        "analyzer": "ik_max_word",
+        "search_analyzer": "ik_smart",
+        "similarity": "custom_bm25"
+      }
+    }
+  }
+}
+
+PUT /bm25_tuned
+{
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0,
+    "similarity": {
+      "custom_bm25": {
+        "type": "BM25",
+        "k1": 2.0,
+        "b": 0.0
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "title": {
+        "type": "text",
+        "analyzer": "ik_max_word",
+        "search_analyzer": "ik_smart",
+        "similarity": "custom_bm25"
+      },
+      "content": {
+        "type": "text",
+        "analyzer": "ik_max_word",
+        "search_analyzer": "ik_smart",
+        "similarity": "custom_bm25"
+      }
+    }
+  }
+}
+
+POST /bm25_default/_doc/short
+{ "title": "机械键盘", "content": "机械键盘好用" }
+
+POST /bm25_default/_doc/medium
+{ "title": "机械键盘选购", "content": "机械键盘适合编程。机械键盘有青轴茶轴红轴。选购机械键盘要看配列。" }
+
+POST /bm25_default/_doc/long
+{ "title": "机械键盘长文", "content": "机械键盘是常见外设。很多人讨论机械键盘手感。机械键盘轴体分青轴茶轴红轴。办公室里机械键盘声响要留意。旅行时可带紧凑机械键盘。总之机械键盘话题很多，但核心仍是手感与配列。" }
+
+POST /bm25_tuned/_doc/short
+{ "title": "机械键盘", "content": "机械键盘好用" }
+
+POST /bm25_tuned/_doc/medium
+{ "title": "机械键盘选购", "content": "机械键盘适合编程。机械键盘有青轴茶轴红轴。选购机械键盘要看配列。" }
+
+POST /bm25_tuned/_doc/long
+{ "title": "机械键盘长文", "content": "机械键盘是常见外设。很多人讨论机械键盘手感。机械键盘轴体分青轴茶轴红轴。办公室里机械键盘声响要留意。旅行时可带紧凑机械键盘。总之机械键盘话题很多，但核心仍是手感与配列。" }
+
+POST /bm25_default/_refresh
+POST /bm25_tuned/_refresh
+
+GET /bm25_default/_search
+{
+  "query": { "match": { "content": "机械键盘" } }
+}
+
+GET /bm25_tuned/_search
+{
+  "query": { "match": { "content": "机械键盘" } }
+}
+
+GET /bm25_default/_explain/long
+{
+  "query": { "match": { "content": "机械键盘" } }
+}
